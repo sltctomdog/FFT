@@ -1,4 +1,3 @@
-from pickle import TRUE
 import numpy as np
 import cmath
 
@@ -23,8 +22,23 @@ def TF1D(Image1D):
 
     return [round(value.real, 8)+round(value.imag, 8)*1j for value in ImageRes]
 
-def TFI1D(Image1D):
-    return 0
+def TFI1D(ImageTransforme):
+    # Notre tableau de retour
+    ImageRes = []
+    # La longueur de notre tableau
+    N=len(ImageTransforme)
+
+    # On parcours notre tableau initial
+    for u in range(N):
+        sum = 0
+        # On applique la formule
+        for x in range(N):
+            sum += ImageTransforme[x]*cmath.exp((2j * cmath.pi * u * x) / N)
+        # On met la valeur dans le tableau
+        sum /= N
+        ImageRes.append(sum)
+
+    return [round(value.real, 8)+round(value.imag, 8)*1j for value in ImageRes]
 
 def TF2D(Image2D):
     return 0
@@ -48,14 +62,23 @@ def main():
                 print(ImageTransforme)
                 print('--------------------------------------------------')
                 print("Résultat de l'algorithme de numpy")
-                A =  np.fft.fft(Image1D)
-                print(A)
+                print(np.fft.fft(Image1D))
                 print('--------------------------------------------------')
-            case 11:
-                TFI1D(Image1D)
-            case 2:
+
+            case '11':
+                ImageTransforme=TF1D(Image1D)
+
+                ImageInitial=TFI1D(Image1D)
+                print('Résultat de notre algorithme')
+                print(ImageInitial)
+                print('--------------------------------------------------')
+                print("Résultat de l'algorithme de numpy")
+                print(np.fft.ifft(Image1D))
+                print('--------------------------------------------------')
+
+            case '2':
                 TF2D(Image2D)
-            case 22:
+            case '22':
                 TFI2D(Image2D)
             case _:
                 print("Choix incorrect\n")
