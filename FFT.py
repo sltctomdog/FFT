@@ -1,10 +1,19 @@
 from numbers import Real
 import numpy as np
+from PIL import Image, ImageOps
 import cmath
 
 
 Image1D = np.array([1, 6, 2, 4])
 Image2D = np.array([[0, 0, 0], [1, 1, 1], [0, 0, 0]])
+
+def openImg(nomImage):
+    imgRGB = Image.open(nomImage)
+    imgGreyscale = ImageOps.grayscale(imgRGB)
+    imgGreyscale.show()
+    matriceGreyscale = np.asarray(imgGreyscale)
+    
+    return matriceGreyscale
 
 def TF1D(Matrice1D):
     
@@ -67,7 +76,9 @@ def TFI2D(Matrice2D):
     return MatriceRes
 
 def main():
-
+    # nomImage = input("Saisir le nom de l'image à ouvrir : ")
+    openImg("imageTest.JPG")
+    """
     while True:
         choix = input("Choisir la transformee de fourrier a utiliser : \n (1)  1D\n (11) 1D Inverse\n (2)  2D\n (22) 2D Inverse\n")
         match choix:
@@ -128,5 +139,6 @@ def main():
             case _:
                 print("Choix incorrect\n")
                 break
+    """
         
 main()
