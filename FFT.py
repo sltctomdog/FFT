@@ -75,9 +75,78 @@ def TFI2D(Matrice2D):
     MatriceRes = MatriceRes_trans.transpose()
     return MatriceRes
 
+def TF1R(Matrice1D):
+    N=Matrice1D.shape[0]
+    MatriceRes = np.zeros(N, dtype=complex)
+    
+    # On parcours notre matrice initial
+    for u in range(N):
+        sumpair = 0
+        sumimpair = 0
+        sumres = 0
+        if(N%2==0):
+            for x in range(int(N/2)):
+                sumpair += Matrice1D[2*x]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))        
+                sumimpair += Matrice1D[2*x+1]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))
+        else:
+            for x in range(int((N+1)/2)):
+                sumpair += Matrice1D[2*x]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))   
+            for x in range(int((N-1)/2)):
+                sumimpair += Matrice1D[2*x+1]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))
+
+        sumres = sumpair+cmath.exp((-2j * cmath.pi * u) / N)*sumimpair
+
+        # On met la valeur dans la matrice resultat + on arrondi les valeurs
+        MatriceRes[u]=round(sumres.real, 8)+round(sumres.imag, 8)*1j  
+
+    return MatriceRes
+
+def TFI1R(Matrice1D):
+    N=Matrice1D.shape[0]
+    MatriceRes = np.zeros(N, dtype=complex)
+    
+    # On parcours notre matrice initial
+    for u in range(N):
+        sumpair = 0
+        sumimpair = 0
+        sumres = 0
+        if(N%2==0):
+            for x in range(int(N/2)):
+                sumpair += Matrice1D[2*x]*cmath.exp((2j * cmath.pi * u * x) / (N/2))        
+                sumimpair += Matrice1D[2*x+1]*cmath.exp((2j * cmath.pi * u * x) / (N/2))
+        else:
+            for x in range(int((N+1)/2)):
+                sumpair += Matrice1D[2*x]*cmath.exp((2j * cmath.pi * u * x) / (N/2))   
+            for x in range(int((N-1)/2)):
+                sumimpair += Matrice1D[2*x+1]*cmath.exp((2j * cmath.pi * u * x) / (N/2))
+
+        sumres = sumpair+cmath.exp((-2j * cmath.pi * u) / N)*sumimpair
+        sumres /= N
+
+        # On met la valeur dans la matrice resultat + on arrondi les valeurs
+        MatriceRes[u]=round(sumres.real, 8)+round(sumres.imag, 8)*1j  
+
+    return MatriceRes
+    
+
 def main():
     # nomImage = input("Saisir le nom de l'image à ouvrir : ")
-    openImg("imageTest.JPG")
+    #openImg("imageTest.JPG")
+
+    print('Tableau des entrées')
+    print(Image1D)
+    print('--------------------------------------------------')
+    ImageTF1D=TF1D(Image1D)
+    print('Matrice resultante de la TF1D')
+    print(ImageTF1D)
+    print('--------------------------------------------------')
+    ImageTFI1R=TFI1D(ImageTF1D)
+    print('Résultat de notre algorithme pour la TFI1D')
+    print(ImageTFI1R)
+    print('--------------------------------------------------')
+    print("Résultat de l'algorithme de numpy pour la TFI1D")
+    print(np.fft.ifft(ImageTF1D))
+    print('--------------------------------------------------')
     """
     while True:
         choix = input("Choisir la transformee de fourrier a utiliser : \n (1)  1D\n (11) 1D Inverse\n (2)  2D\n (22) 2D Inverse\n")
