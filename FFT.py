@@ -3,8 +3,7 @@ import numpy as np
 from PIL import Image, ImageOps
 import cmath
 
-
-Image1D = np.array([1, 45, 2, 4, 8, 26])
+Image1D = np.array([1, 45, 2, 4, 8])
 
 def openImg(nomImage):
     imgRGB = Image.open(nomImage)
@@ -136,7 +135,7 @@ def TFI1R(Matrice1D):
             for x in range(int((N-1)/2)):
                 sumimpair += Matrice1D[2*x+1]*cmath.exp((2j * cmath.pi * u * x) / (N/2))
 
-        sumres = sumpair+cmath.exp((-2j * cmath.pi * u) / N)*sumimpair
+        sumres = sumpair+cmath.exp((2j * cmath.pi * u) / N)*sumimpair
         sumres /= N
 
         # On met la valeur dans la matrice resultat + on arrondi les valeurs
@@ -196,20 +195,26 @@ def TFI2R(Matrice2D):
     return MatriceRes
 
 def main():
-    """ 
-    mat = np.loadtxt("matrice_TF2D.txt", dtype=complex)
+    """
+    print('Matrice en entrée')
+    print(Image1D)
     print('--------------------------------------------------')
-    tfi2d = TFI2D(mat)
-    #print(tfi2d)
+    ImageTF1R=TF1R(Image1D)
+    print('Résultat de notre algorithme pour la TF1R')
+    print(ImageTF1R)
     print('--------------------------------------------------')
-    tfi2R = TFI2R(mat)
-    #print(tfi2R)
+    print("Résultat de l'algorithme de numpy pour la TF1R")
+    print(np.fft.fft(Image1D))
     print('--------------------------------------------------')
-    print("Résultat de l'algorithme de numpy pour la TF2D")
-    print(np.fft.ifft2(mat))
+    ImageTFI1R=TFI1R(ImageTF1R)
+    print('Résultat de notre algorithme pour la TFI1R')
+    print(ImageTFI1R)
+    print('--------------------------------------------------')
+    print("Résultat de l'algorithme de numpy pour la TFI1R")
+    print(np.fft.ifft(ImageTF1R))
     print('--------------------------------------------------')
 
-    """    
+      
     while True:
         print("1. Demonstration de la transformee de Fourrier et de son inverse sur une matrice à une dimension \n2. Transformee de Fourrier discrete à deux dimensions\n22. Transformee de Fourrier inverse discrete a deux dimensions")
         print("3. Transformee de Fourrier rapide à deux dimensions\n33. Transformee de Fourrier rapide inverse à deux dimensions")
@@ -302,5 +307,5 @@ def main():
                 print(np.fft.ifft2(mat))
                 print('--------------------------------------------------')
             case _:
-                break
+                break"""
 main()
