@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image, ImageOps
 import cmath
 
-Image1D = np.array([1, 45, 2, 4, 8])
+Image1D = np.array([1, 12, 4, 8])
 
 def openImg(nomImage):
     imgRGB = Image.open(nomImage)
@@ -53,7 +53,7 @@ def TF2D(Matrice2D):
         MatriceRes_trans[i] = TF1D(MatriceRes_trans[i])
     # On remet les lignes à la place des colonnes 
     MatriceRes = MatriceRes_trans.transpose()
-    np.savetxt("TF2D/matrice_TF2D.txt", MatriceRes)
+    np.savetxt("TF2D/matrice_TF2D.txt", MatriceRes, fmt="%.2e")
     #On créé une matrice de uint8 afin de pas avoir de problème de compatibilité lors de la création de l'image finale
     Matrice = np.zeros((MatriceRes.shape[0], MatriceRes.shape[1]), dtype=np.uint8)
     for i in range (MatriceRes.shape[0]):
@@ -73,13 +73,11 @@ def TFI2D(Matrice2D):
         
     # On inverse les lignes et les colonnes
     MatriceRes_trans = MatriceRes.transpose()
-    print(MatriceRes_trans)
     # On applique à nouveau la TFI1D sur cette matrice (donc sur les colonnes de notre image2D)
     for i in range(MatriceRes_trans.shape[0]):
         MatriceRes_trans[i] = TFI1D(MatriceRes_trans[i])
     # On remet les lignes à la place des colonnes 
     MatriceRes = MatriceRes_trans.transpose()
-    print(MatriceRes)
     #On créé une matrice de uint8 afin de pas avoir de problème de compatibilité lors de la création de l'image finale
     Matrice = np.zeros((MatriceRes.shape[0], MatriceRes.shape[1]), dtype=np.uint8)
     for i in range (MatriceRes.shape[0]):
@@ -157,7 +155,7 @@ def TF2R(Matrice2D):
         MatriceRes_trans[i] = TF1R(MatriceRes_trans[i])
     # On remet les lignes à la place des colonnes 
     MatriceRes = MatriceRes_trans.transpose()
-    np.savetxt("TF2R/matrice_TF2R.txt", MatriceRes)
+    np.savetxt("TF2R/matrice_TF2R.txt", MatriceRes, fmt="%.2e")
     #On créé une matrice de uint8 afin de pas avoir de problème de compatibilité lors de la création de l'image finale
     Matrice = np.zeros((MatriceRes.shape[0], MatriceRes.shape[1]), dtype=np.uint8)
     for i in range (MatriceRes.shape[0]):
@@ -195,25 +193,6 @@ def TFI2R(Matrice2D):
     return MatriceRes
 
 def main():
-    """
-    print('Matrice en entrée')
-    print(Image1D)
-    print('--------------------------------------------------')
-    ImageTF1R=TF1R(Image1D)
-    print('Résultat de notre algorithme pour la TF1R')
-    print(ImageTF1R)
-    print('--------------------------------------------------')
-    print("Résultat de l'algorithme de numpy pour la TF1R")
-    print(np.fft.fft(Image1D))
-    print('--------------------------------------------------')
-    ImageTFI1R=TFI1R(ImageTF1R)
-    print('Résultat de notre algorithme pour la TFI1R')
-    print(ImageTFI1R)
-    print('--------------------------------------------------')
-    print("Résultat de l'algorithme de numpy pour la TFI1R")
-    print(np.fft.ifft(ImageTF1R))
-    print('--------------------------------------------------')
-
       
     while True:
         print("1. Demonstration de la transformee de Fourrier et de son inverse sur une matrice à une dimension \n2. Transformee de Fourrier discrete à deux dimensions\n22. Transformee de Fourrier inverse discrete a deux dimensions")
@@ -246,66 +225,37 @@ def main():
                 print("Résultat de l'algorithme de numpy pour la TFI1")
                 print(np.fft.ifft(ImageTF1D))
                 print('--------------------------------------------------')
-            case '11':
-                print('Matrice en entrée')
-                print(Image1D)
-                print('--------------------------------------------------')
-                ImageTF1R=TF1R(Image1D)
-                print('Résultat de notre algorithme pour la TF1R')
-                print(ImageTF1R)
-                print('--------------------------------------------------')
-                print("Résultat de l'algorithme de numpy pour la TF1R")
-                print(np.fft.fft(Image1D))
-                print('--------------------------------------------------')
-                ImageTFI1R=TFI1R(ImageTF1R)
-                print('Résultat de notre algorithme pour la TFI1R')
-                print(ImageTFI1R)
-                print('--------------------------------------------------')
-                print("Résultat de l'algorithme de numpy pour la TFI1R")
-                print(np.fft.ifft(ImageTF1R))
-                print('--------------------------------------------------')
             case '2':
                 nomImage = input("Saisir le nom de l'image à ouvrir (en .jpg) : ")
                 tf2d = TF2D(openImg(nomImage))
-                print("ImageTF2D.jpg et matrice_TF2D.txt créées !")
-                print('Résultat de notre algorithme pour la TF2D')
-                print(tf2d)
-                print('--------------------------------------------------')
-                print("Résultat de l'algorithme de numpy pour la TF2D")
-                print(np.fft.fft2(openImg(nomImage)))
-                print('--------------------------------------------------')
+                np.savetxt("TF2D/numpy_TF2D.txt", np.fft.fft2(openImg(nomImage)),  fmt="%.2e")
+                print('--------------------------------------------------------')
+                print("ImageTF2D.jpg, matrice_TF2D.txt, numpy_TF2D.txt créées !")
+                print('--------------------------------------------------------')
             case '22':
                 nomMatrice = input("Saisir le nom de la matrice à ouvrir (en .txt) : ")
                 mat = np.loadtxt(nomMatrice, dtype=complex)
                 tfi2d = TFI2D(mat)
-                print("ImageTFI2D.jpg et matrice_TFI2D.txt créées !")
-                print('Résultat de notre algorithme pour la TFI2D')
-                print(tfi2d)
-                print('--------------------------------------------------')
-                print("Résultat de l'algorithme de numpy pour la TFI2D")
-                print(np.fft.ifft2(mat))
-                print('--------------------------------------------------')
+                np.savetxt("TF2D/numpy_TFI2D.txt", np.fft.ifft2(mat), fmt="%.1e")
+                print('-----------------------------------------------------------')
+                print("ImageTFI2D.jpg, matrice_TFI2D.txt, numpy_TFI2D.txt créées !")
+                print('-----------------------------------------------------------')
             case '3':
                 nomImage = input("Saisir le nom de l'image à ouvrir (en .jpg) : ")
                 tf2r = TF2R(openImg(nomImage))
-                print("ImageTF2R.jpg et matrice_TF2R.txt créées !")
-                print('Résultat de notre algorithme pour la TF2R')
-                print(tf2r)
-                print('--------------------------------------------------')
-                print("Résultat de l'algorithme de numpy pour la TF2R")
-                print(np.fft.fft2(openImg(nomImage)))
-                print('--------------------------------------------------')
+                np.savetxt("TF2R/numpy_TF2R.txt", np.fft.fft2(openImg(nomImage)), fmt="%.2e")
+                print('--------------------------------------------------------')
+                print("ImageTF2R.jpg, matrice_TF2R.txt, numpy_TF2R.txt créées !")
+                print('--------------------------------------------------------')
+        
             case '33':
                 nomMatrice = input("Saisir le nom de la matrice à ouvrir (en .txt) : ")
                 mat = np.loadtxt(nomMatrice, dtype=complex)
                 tfi2r = TFI2R(mat)
-                print("ImageTFI2R.jpg et matrice_TFI2R.txt créées !")
-                print('Résultat de notre algorithme pour la TFI2D')
-                print(tfi2r)
-                print('--------------------------------------------------')
-                print("Résultat de l'algorithme de numpy pour la TFI2R")
-                print(np.fft.ifft2(mat))
-                print('--------------------------------------------------')
+                np.savetxt("TF2R/numpy_TFI2R.txt", np.fft.ifft2(mat), fmt="%.1e")
+                print('-----------------------------------------------------------')
+                print("ImageTFI2R.jpg, matrice_TFI2R.txt, numpy_TFI2R.txt créées !")
+                print('-----------------------------------------------------------')
             case _:
-                break"""
+                break
 main()
