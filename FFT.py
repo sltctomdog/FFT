@@ -2,8 +2,9 @@ from numbers import Real
 import numpy as np
 from PIL import Image, ImageOps
 import cmath
+import time
 
-Image1D = np.array([1, 12, 4, 8])
+Image1D = np.array([1, 2, 3, 4])
 
 def openImg(nomImage):
     imgRGB = Image.open(nomImage)
@@ -89,57 +90,35 @@ def TFI2D(Matrice2D):
     return MatriceRes
 
 def TF1R(Matrice1D):
-    N=Matrice1D.shape[0]
-    MatriceRes = np.zeros(N, dtype=complex)
-    
-    # On parcours notre matrice initial
-    for u in range(N):
-        sumpair = 0
-        sumimpair = 0
-        sumres = 0
-        if(N%2==0):
-            for x in range(int(N/2)):
-                sumpair += Matrice1D[2*x]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))        
-                sumimpair += Matrice1D[2*x+1]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))
-        else:
-            for x in range(int((N+1)/2)):
-                sumpair += Matrice1D[2*x]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))   
-            for x in range(int((N-1)/2)):
-                sumimpair += Matrice1D[2*x+1]*cmath.exp((-2j * cmath.pi * u * x) / (N/2))
+    N=len(Matrice1D)
 
-        sumres = sumpair+cmath.exp((-2j * cmath.pi * u) / N)*sumimpair
+    if N<=1:
+        return Matrice1D
+    else :
+        pair = TF1R(Matrice1D[0::2])
+        impair = TF1R(Matrice1D[1::2])
+        MatriceRes = np.zeros(N).astype(np.complex64)
+        for i in range(0, N//2):
+            MatriceRes[i] = pair[i]+cmath.exp(-2j*cmath.pi*i/N)*impair[i]
+            MatriceRes[i+N//2] = pair[i]-cmath.exp(-2j*cmath.pi*i/N)*impair[i]
+        return MatriceRes
 
-        # On met la valeur dans la matrice resultat + on arrondi les valeurs
-        MatriceRes[u]=round(sumres.real, 8)+round(sumres.imag, 8)*1j  
+def TFI1R_m(Matrice1D):
 
-    return MatriceRes
+    N=len(Matrice1D)
+    if N<=1:
+        return Matrice1D
+    else :
+        pair = TFI1R_m(Matrice1D[0::2])
+        impair = TFI1R_m(Matrice1D[1::2])
+        MatriceRes = np.zeros(N).astype(np.complex64)
+        for i in range(0, N//2):
+            MatriceRes[i] = pair[i]+cmath.exp(2j*cmath.pi*i/N)*impair[i]
+            MatriceRes[i+N//2] = pair[i]-cmath.exp(2j*cmath.pi*i/N)*impair[i]
+        return MatriceRes
 
-def TFI1R(Matrice1D):
-    N=Matrice1D.shape[0]
-    MatriceRes = np.zeros(N, dtype=complex)
-    
-    # On parcours notre matrice initial
-    for u in range(N):
-        sumpair = 0
-        sumimpair = 0
-        sumres = 0
-        if(N%2==0):
-            for x in range(int(N/2)):
-                sumpair += Matrice1D[2*x]*cmath.exp((2j * cmath.pi * u * x) / (N/2))        
-                sumimpair += Matrice1D[2*x+1]*cmath.exp((2j * cmath.pi * u * x) / (N/2))
-        else:
-            for x in range(int((N+1)/2)):
-                sumpair += Matrice1D[2*x]*cmath.exp((2j * cmath.pi * u * x) / (N/2))   
-            for x in range(int((N-1)/2)):
-                sumimpair += Matrice1D[2*x+1]*cmath.exp((2j * cmath.pi * u * x) / (N/2))
-
-        sumres = sumpair+cmath.exp((2j * cmath.pi * u) / N)*sumimpair
-        sumres /= N
-
-        # On met la valeur dans la matrice resultat + on arrondi les valeurs
-        MatriceRes[u]=round(sumres.real, 8)+round(sumres.imag, 8)*1j  
-
-    return MatriceRes
+def TFI1R(tab):
+    return [x/len(tab) for x in TFI1R_m(tab)]
 
 def TF2R(Matrice2D):
     # Creation d'une matrice de taille ligne*colonne de l'image2D 
@@ -193,10 +172,15 @@ def TFI2R(Matrice2D):
     return MatriceRes
 
 def main():
-      
+    timeResDirecte=0
+    timeResRapide=0
     while True:
-        print("1. Demonstration de la transformee de Fourrier et de son inverse sur une matrice à une dimension \n2. Transformee de Fourrier discrete à deux dimensions\n22. Transformee de Fourrier inverse discrete a deux dimensions")
-        print("3. Transformee de Fourrier rapide à deux dimensions\n33. Transformee de Fourrier rapide inverse à deux dimensions")
+
+        print("\n1.  Demonstration de la transformee de Fourrier et de son inverse sur une matrice à une dimension \n2.  Transformee de Fourrier Directe à deux dimensions\n22. Transformee de Fourrier Inverse Directe à deux dimensions")
+        print("3.  Transformee de Fourrier rapide à deux dimensions\n33. Transformee de Fourrier rapide inverse à deux dimensions\n")
+        print("Temps d'éxecution Direct : ", timeResDirecte)
+        print("Temps d'éxecution Rapide : ", timeResRapide, "\n")
+
         choix = input("Votre choix : ")
         match choix:
             case '1':
@@ -227,7 +211,12 @@ def main():
                 print('--------------------------------------------------')
             case '2':
                 nomImage = input("Saisir le nom de l'image à ouvrir (en .jpg) : ")
-                tf2d = TF2D(openImg(nomImage))
+
+                timeStart = time.time()
+                TF2D(openImg(nomImage))
+                timeEend = time.time()
+                timeResDirecte = timeEend - timeStart
+
                 np.savetxt("TF2D/numpy_TF2D.txt", np.fft.fft2(openImg(nomImage)),  fmt="%.2e")
                 print('--------------------------------------------------------')
                 print("ImageTF2D.jpg, matrice_TF2D.txt, numpy_TF2D.txt créées !")
@@ -242,7 +231,12 @@ def main():
                 print('-----------------------------------------------------------')
             case '3':
                 nomImage = input("Saisir le nom de l'image à ouvrir (en .jpg) : ")
-                tf2r = TF2R(openImg(nomImage))
+
+                timeStart = time.time()
+                TF2R(openImg(nomImage))
+                timeEend = time.time()
+                timeResRapide = timeEend - timeStart
+                
                 np.savetxt("TF2R/numpy_TF2R.txt", np.fft.fft2(openImg(nomImage)), fmt="%.2e")
                 print('--------------------------------------------------------')
                 print("ImageTF2R.jpg, matrice_TF2R.txt, numpy_TF2R.txt créées !")
@@ -258,4 +252,6 @@ def main():
                 print('-----------------------------------------------------------')
             case _:
                 break
+
+            
 main()

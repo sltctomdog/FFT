@@ -1,2 +1,2 @@
 # FFT
- Transforme de Fourier
+ Transformee de Fourrier
