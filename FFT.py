@@ -120,13 +120,13 @@ def TFI1R_m(Matrice1D):
         impair = TFI1R_m(Matrice1D[1::2])
         # On crée un nouveau tableau
         MatriceRes = np.zeros(N).astype(np.complex64)
-        # On reconstitue petit à petit le tableau 1D avec la formule
+        # On reconstitue petit à petit le tableau 1D avec la formule et les changements de signes
         for i in range(0, N//2):
             MatriceRes[i] = pair[i]+cmath.exp(2j*cmath.pi*i/N)*impair[i]
             MatriceRes[i+N//2] = pair[i]-cmath.exp(2j*cmath.pi*i/N)*impair[i]
         return MatriceRes
 
-# Sert à supprimé le coefficiant de chaque valeur
+# On supprime le coefficiant de chaque valeur
 def TFI1R(tab):
     return [x/len(tab) for x in TFI1R_m(tab)]
 
@@ -144,12 +144,12 @@ def TF2R(Matrice2D):
         MatriceRes_trans[i] = TF1R(MatriceRes_trans[i])
     # On remet les lignes à la place des colonnes 
     MatriceRes = MatriceRes_trans.transpose()
-    np.savetxt("TF2R/matrice_TF2R.txt", MatriceRes, fmt="%.2e")
     #On créé une matrice de uint8 afin de pas avoir de problème de compatibilité lors de la création de l'image finale
     Matrice = np.zeros((MatriceRes.shape[0], MatriceRes.shape[1]), dtype=np.uint8)
     for i in range (MatriceRes.shape[0]):
         for j in range (MatriceRes.shape[1]):
-            Matrice[i][j]=np.abs(MatriceRes[i][j])
+            Matrice[i][j]=np.abs(MatriceRes[i][j]) 
+    np.savetxt("TF2R/matrice_TF2R.txt", MatriceRes, fmt="%.2e")
     img = Image.fromarray(Matrice)
     img.save("TF2R/ImageTF2R.jpg")
     return MatriceRes
