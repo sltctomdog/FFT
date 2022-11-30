@@ -164,13 +164,11 @@ def TFI2R(Matrice2D):
         
     # On inverse les lignes et les colonnes
     MatriceRes_trans = MatriceRes.transpose()
-    print(MatriceRes_trans)
     # On applique à nouveau la TFI1R sur cette matrice (donc sur les colonnes de notre image2D)
     for i in range(MatriceRes_trans.shape[0]):
         MatriceRes_trans[i] = TFI1R(MatriceRes_trans[i])       
     # On remet les lignes à la place des colonnes 
     MatriceRes = MatriceRes_trans.transpose()
-    print(MatriceRes)
     #On créé une matrice de uint8 afin de pas avoir de problème de compatibilité lors de la création de l'image finale
     Matrice = np.zeros((MatriceRes.shape[0], MatriceRes.shape[1]), dtype=np.uint8)
     for i in range (MatriceRes.shape[0]):
@@ -181,16 +179,15 @@ def TFI2R(Matrice2D):
     img.save("TF2R/ImageTFI2R.jpg")
     return MatriceRes
 
-def main():
+def main():   
     timeResDirecte=0
     timeResRapide=0
-    while True:
-
+    while True:       
         print("\n1.  Demonstration de la transformee de Fourrier et de son inverse sur une matrice à une dimension \n2.  Transformee de Fourrier Directe à deux dimensions\n22. Transformee de Fourrier Inverse Directe à deux dimensions")
         print("3.  Transformee de Fourrier rapide à deux dimensions\n33. Transformee de Fourrier rapide inverse à deux dimensions\n")
         print("Temps d'éxecution Direct : ", timeResDirecte)
         print("Temps d'éxecution Rapide : ", timeResRapide, "\n")
-
+        
         choix = input("Votre choix : ")
         match choix:
             case '1':
@@ -234,7 +231,10 @@ def main():
             case '22':
                 nomMatrice = input("Saisir le nom de la matrice à ouvrir (en .txt) : ")
                 mat = np.loadtxt(nomMatrice, dtype=complex)
+                timeStart = time.time()
                 tfi2d = TFI2D(mat)
+                timeEend = time.time()
+                timeResDirecte = timeEend - timeStart
                 np.savetxt("TF2D/numpy_TFI2D.txt", np.fft.ifft2(mat), fmt="%.1e")
                 print('-----------------------------------------------------------')
                 print("ImageTFI2D.jpg, matrice_TFI2D.txt, numpy_TFI2D.txt créées !")
@@ -255,7 +255,10 @@ def main():
             case '33':
                 nomMatrice = input("Saisir le nom de la matrice à ouvrir (en .txt) : ")
                 mat = np.loadtxt(nomMatrice, dtype=complex)
+                timeStart = time.time()
                 tfi2r = TFI2R(mat)
+                timeEend = time.time()
+                timeResRapide = timeEend - timeStart
                 np.savetxt("TF2R/numpy_TFI2R.txt", np.fft.ifft2(mat), fmt="%.1e")
                 print('-----------------------------------------------------------')
                 print("ImageTFI2R.jpg, matrice_TFI2R.txt, numpy_TFI2R.txt créées !")
