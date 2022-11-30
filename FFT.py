@@ -13,29 +13,30 @@ def openImg(nomImage):
     return matriceGreyscale
 
 def TF1D(Matrice1D):
-    
+    N=len(Matrice1D)
     # Creation d'une matrice de la taille de l'image1D 
-    MatriceRes = np.zeros(Matrice1D.shape[0], dtype=complex)
+    MatriceRes = np.zeros(N, dtype=complex)
     # On parcours notre matrice initial
-    for u in range(Matrice1D.shape[0]):
+    for u in range(N):
         sum = 0
         # On applique la formule
-        for x in range(Matrice1D.shape[0]):
-            sum += Matrice1D[x]*cmath.exp((-2j * cmath.pi * u * x) / Matrice1D.shape[0])
+        for x in range(N):
+            sum += Matrice1D[x]*cmath.exp((-2j * cmath.pi * u * x) / N)
         # On met la valeur dans la matrice resultat + on arrondi les valeurs
         MatriceRes[u]=round(sum.real, 8)+round(sum.imag, 8)*1j
     return MatriceRes
 
 def TFI1D(Matrice1D):
+    N=len(Matrice1D)
     # Creation d'une matrice de la taille de l'image1D 
-    MatriceRes = np.zeros(Matrice1D.shape[0], dtype=complex)
+    MatriceRes = np.zeros(N, dtype=complex)
     # On parcours notre matrice initial
-    for u in range(Matrice1D.shape[0]):
+    for u in range(N):
         sum = 0
         # On applique la formule
-        for x in range(Matrice1D.shape[0]):
-            sum += Matrice1D[x]*cmath.exp((2j * cmath.pi * u * x) / Matrice1D.shape[0])
-        sum /= Matrice1D.shape[0]
+        for x in range(N):
+            sum += Matrice1D[x]*cmath.exp((2j * cmath.pi * u * x) / N)
+        sum /= N
         # On met la valeur dans la matrice resultat + on arrondi les valeurs
         MatriceRes[u]=round(sum.real, 8)+round(sum.imag, 8)*1j
     return MatriceRes
@@ -92,31 +93,40 @@ def TFI2D(Matrice2D):
 def TF1R(Matrice1D):
     N=len(Matrice1D)
 
+    # Si le tableau n'a qu'une seul valeur on retourne la valeur
     if N<=1:
         return Matrice1D
     else :
+        # Récursivité sur les index pair et impair
         pair = TF1R(Matrice1D[0::2])
         impair = TF1R(Matrice1D[1::2])
+        # On crée un nouveau tableau
         MatriceRes = np.zeros(N).astype(np.complex64)
+        # On reconstitue petit à petit le tableau 1D avec la formule
         for i in range(0, N//2):
             MatriceRes[i] = pair[i]+cmath.exp(-2j*cmath.pi*i/N)*impair[i]
             MatriceRes[i+N//2] = pair[i]-cmath.exp(-2j*cmath.pi*i/N)*impair[i]
         return MatriceRes
 
 def TFI1R_m(Matrice1D):
-
     N=len(Matrice1D)
+
+    # Si le tableau n'a qu'une seul valeur on retourne la valeur
     if N<=1:
         return Matrice1D
     else :
+        # Récursivité sur les index pair et impair
         pair = TFI1R_m(Matrice1D[0::2])
         impair = TFI1R_m(Matrice1D[1::2])
+        # On crée un nouveau tableau
         MatriceRes = np.zeros(N).astype(np.complex64)
+        # On reconstitue petit à petit le tableau 1D avec la formule
         for i in range(0, N//2):
             MatriceRes[i] = pair[i]+cmath.exp(2j*cmath.pi*i/N)*impair[i]
             MatriceRes[i+N//2] = pair[i]-cmath.exp(2j*cmath.pi*i/N)*impair[i]
         return MatriceRes
 
+# Sert à supprimé le coefficiant de chaque valeur
 def TFI1R(tab):
     return [x/len(tab) for x in TFI1R_m(tab)]
 
